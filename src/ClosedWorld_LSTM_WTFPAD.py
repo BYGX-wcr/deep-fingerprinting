@@ -36,7 +36,7 @@ print("Number of Epoch: ", NB_EPOCH)
 BATCH_SIZE = 128 # Batch size
 VERBOSE = 2 # Output display mode
 LENGTH = 700 # Packet sequence length
-OPTIMIZER = Adamax(learning_rate=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0) # Optimizer
+OPTIMIZER = Adamax(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0) # Optimizer
 
 NB_CLASSES = 100 # number of outputs = number of classes
 INPUT_SHAPE = (LENGTH,1)

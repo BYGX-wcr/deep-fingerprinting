@@ -59,7 +59,7 @@ def LoadTsDataSetFromRawTraces(dir, pktSeqLen):
                 ts = float(content[0])
                 if count == 0:
                     last_ts = ts
-                    ts = 0
+                    ts = 1
                 else:
                     ts = ts - last_ts
                     last_ts = float(content[0])

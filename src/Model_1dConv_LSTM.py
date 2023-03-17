@@ -1,6 +1,6 @@
 # DF model used for non-defended dataset
 from keras.models import Sequential
-from keras.layers import Conv1D, MaxPooling1D, BatchNormalization, LSTM
+from keras.layers import Conv1D, MaxPooling1D, BatchNormalization, LSTM, CuDNNLSTM
 from keras.layers.core import Activation, Flatten, Dense, Dropout
 from keras.layers import ELU
 from keras.initializers import glorot_uniform

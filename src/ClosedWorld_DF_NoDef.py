@@ -44,7 +44,7 @@ INPUT_SHAPE = (LENGTH,1)
 
 # Data: shuffled and split between train and test sets
 print(("Loading and preparing data for training, and evaluating the model"))
-X, y = LoadTsDataSetFromRawTraces("./dataset/wt-batch", LENGTH)
+X, y = LoadDataSetFromRawTraces("./dataset/wt-batch", LENGTH)
 NB_CLASSES = max(y) + 1 if max(y) + 1 > NB_CLASSES else NB_CLASSES
 print("Sample data:", X[0])
 print("Number of class:", NB_CLASSES)
