@@ -9,6 +9,12 @@ def LoadDataSetFromRawTraces(dir, pktSeqLen):
     data = []
     labels = []
     for f in files:
+        fn = f.split(".")[0]
+        if "-" in fn:
+            label = (int(fn.split("-")[0]))
+        else:
+            continue
+        
         seq = []
         with open(dir+'/'+f, "r") as fd:
             for line in fd.readlines():
@@ -27,7 +33,53 @@ def LoadDataSetFromRawTraces(dir, pktSeqLen):
             seq = seq[0:pktSeqLen]
 
         data.append(seq)
-        labels.append(int(f.split("-")[0]))
+        labels.append(label)
+
+    return data, labels
+
+def LoadTsDataSetFromRawTraces(dir, pktSeqLen):
+    files = os.listdir(dir)
+    files = [f for f in files if os.path.isfile(dir+'/'+f)]
+
+    data = []
+    labels = []
+    for f in files:
+        fn = f.split(".")[0]
+        if "-" in fn:
+            label = (int(fn.split("-")[0]))
+        else:
+            continue
+        
+        seq = []
+        last_ts = 0
+        with open(dir+'/'+f, "r") as fd:
+            count = 0
+            for line in fd.readlines():
+                content = line.split()
+                ts = float(content[0])
+                if count == 0:
+                    last_ts = ts
+                    ts = 0
+                else:
+                    ts = ts - last_ts
+                    last_ts = float(content[0])
+                if len(content) > 0:
+                    if content[1].startswith("-"):
+                        seq.append(-ts)
+                    else:
+                        seq.append(ts)
+
+                count += 1
+        
+        deficit = pktSeqLen - len(seq)
+        if deficit > 0:
+            for i in range(0, deficit):
+                seq.append(0)
+        elif deficit < 0:
+            seq = seq[0:pktSeqLen]
+
+        data.append(seq)
+        labels.append(label)
 
     return data, labels
 

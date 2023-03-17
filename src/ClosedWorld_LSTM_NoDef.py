@@ -12,7 +12,7 @@
 
 from keras import backend as K
 from utility import LoadDataSetFromRawTraces, LoadTsDataSetFromRawTraces
-from Model_WTFPAD import DFNet
+from Model_1dConv_LSTM import DFNet
 import random
 from keras.utils import np_utils
 from keras.optimizers import Adamax
@@ -27,7 +27,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 #os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-description = "Training and evaluating DF model for closed-world scenario on WTF-PAD dataset"
+description = "Training and evaluating DF model for closed-world scenario on non-defended dataset"
 
 print(description)
 # Training the DF model
@@ -43,8 +43,11 @@ INPUT_SHAPE = (LENGTH,1)
 
 
 # Data: shuffled and split between train and test sets
-print("Loading and preparing data for training, and evaluating the model")
-X, y = LoadTsDataSetFromRawTraces("./dataset/closed-world-protected", LENGTH)
+print(("Loading and preparing data for training, and evaluating the model"))
+X, y = LoadTsDataSetFromRawTraces("./dataset/wt-batch", LENGTH)
+NB_CLASSES = max(y) + 1 if max(y) + 1 > NB_CLASSES else NB_CLASSES
+print("Sample data:", X[0])
+print("Number of class:", NB_CLASSES)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
 X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.2, random_state=1)
 
@@ -54,6 +57,14 @@ X_test = np.array(X_test)
 y_train = np.array(y_train)
 y_valid = np.array(y_valid)
 y_test = np.array(y_test)
+
+# Convert data as float32 type
+X_train = X_train.astype('float32')
+X_valid = X_valid.astype('float32')
+X_test = X_test.astype('float32')
+y_train = y_train.astype('float32')
+y_valid = y_valid.astype('float32')
+y_test = y_test.astype('float32')
 
 # we need a [Length x 1] x n shape as input to the DF CNN (Tensorflow)
 X_train = X_train[:, :,np.newaxis]
@@ -79,14 +90,15 @@ model.compile(loss="categorical_crossentropy", optimizer=OPTIMIZER,
 print("Model compiled")
 
 # Start training
-history = model.fit(X_train, y_train,
-		batch_size=BATCH_SIZE, epochs=NB_EPOCH,
-		verbose=VERBOSE, validation_data=(X_valid, y_valid))
-
+try:
+	history = model.fit(X_train, y_train,
+			batch_size=BATCH_SIZE, epochs=NB_EPOCH,
+			verbose=VERBOSE, validation_data=(X_valid, y_valid))
+except:
+	print("Early Stop")
 
 # Start evaluating model with testing data
 score_test = model.evaluate(X_test, y_test, verbose=VERBOSE)
 print("Testing accuracy:", score_test[1])
-model.save("../saved_trained_models/cw-wtf-pad.model")
 
 
